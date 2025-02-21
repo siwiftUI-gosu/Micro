@@ -13,12 +13,12 @@ extension Color {
     static let overlay = Overlay()
 
     struct Primitive {
-        let green = Color(red: 19, green: 189, blue: 126, opacity: 1)
-        let lightGreen = Color(red: 19, green: 189, blue: 126, opacity: 0.1)
-        let black = Color(red: 0, green: 0, blue: 0, opacity: 1)
-        let darkGray = Color(red: 108, green: 108, blue: 108, opacity: 1)
-        let lightGray = Color(red: 224, green: 224, blue: 224, opacity: 1)
-        let white = Color(red: 255, green: 255, blue: 255, opacity: 1)
+        let green = Color(red: 19/255, green: 189/255, blue: 126/255, opacity: 1)
+        let lightGreen = Color(red: 19/255, green: 189/255, blue: 126/255, opacity: 0.1)
+        let black = Color(red: 0/255, green: 0/255, blue: 0/255, opacity: 1)
+        let darkGray = Color(red: 108/255, green: 108/255, blue: 108/255, opacity: 1)
+        let lightGray = Color(red: 224/255, green: 224/255, blue: 224/255, opacity: 1)
+        let white = Color(red: 255/255, green: 255/255, blue: 255/255, opacity: 1)
     }
 
     struct Button {
@@ -43,7 +43,7 @@ extension Color {
     }
     
     struct Overlay {
-        let overlay = Color(red: 0, green: 0, blue: 0, opacity: 0.2)
+        let overlay = Color(red: 0/255, green: 0/255, blue: 0/255, opacity: 0.2)
     }
 }
 
