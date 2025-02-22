@@ -9,6 +9,7 @@ import SwiftUI
 
 extension Color {
     static let primitive = Primitive()
+    static let button = Button()
     static let label = Label()
     static let overlay = Overlay()
 
@@ -22,8 +23,8 @@ extension Color {
     }
 
     struct Button {
-        static let backgroud = Background()
-        static let text = Text()
+        let backgroud = Background()
+        let text = Text()
         
         struct Background {
             let primary = primitive.green
