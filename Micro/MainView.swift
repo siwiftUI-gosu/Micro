@@ -22,6 +22,10 @@ struct MainView: View {
 
     @State private var isButtonEnabled = false
 
+    @State private var isShowToast = false
+    @State private var toastOpacity: Double = 0.0
+    @State private var toastOffset: CGFloat = 50
+
     var body: some View {
         VStack(spacing: 40) {
             HStack(alignment: .center, spacing: 16) {
@@ -102,8 +106,30 @@ struct MainView: View {
 
                     Spacer()
 
-                    CustomButton(title: "목표를 작성해주세요", isEnabled: isButtonEnabled) {
-                        print("버튼 클릭됨")
+                    if isShowToast {
+                        CustomToast(title: "달성까지 화이팅! 💪️", direction: .downToUp, function: .noti)
+                            .transition(.move(edge: .bottom))
+                            .offset(y: toastOffset)
+                            .opacity(toastOpacity)
+                    }
+
+                    CustomButton(title: "목표를 작성해주세요", isEnabled: true) {
+                        withAnimation(.easeOut(duration: 0.3).delay(0.001)) {
+                            isShowToast = true
+                            toastOpacity = 1.0
+                            toastOffset = 0
+                        }
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                            withAnimation(.easeOut(duration: 2.0)) {
+                                toastOpacity = 0.0
+                                toastOffset = 50
+                            }
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                isShowToast = false
+                            }
+                        }
                     }
                     .padding(.vertical, 6)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
