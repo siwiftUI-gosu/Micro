@@ -8,10 +8,8 @@
 import Foundation
 
 struct Constants {
-    static let constants = Constants()
-    
-    let button = Button()
-    let label = Label()
+    static let button = Button()
+    static let label = Label()
     
     struct Button {
         let border: CGFloat = 1
