@@ -5,16 +5,12 @@
         <attribute name="iD" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isWrite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="title" optional="YES" attributeType="String"/>
-        <relationship name="goal" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Goal"/>
+        <relationship name="goalList" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Goal"/>
     </entity>
     <entity name="Goal" representedClassName="Goal" syncable="YES" codeGenerationType="class">
         <attribute name="createDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="iD" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isComplete" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="todayGoal" optional="YES" attributeType="String"/>
-    </entity>
-    <entity name="User" representedClassName="User" syncable="YES" codeGenerationType="class">
-        <attribute name="userID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="bookList" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Book"/>
     </entity>
 </model>
