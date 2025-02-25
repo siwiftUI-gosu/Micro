@@ -12,7 +12,7 @@ class CoreDataRepository {
     // MARK: - Singleton
     static let shared = CoreDataRepository()
     private init() {} // 싱글톤을 위해 private 초기화
-
+    
     // MARK: - Core Data Stack
     private lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Micro")
@@ -23,12 +23,12 @@ class CoreDataRepository {
         }
         return container
     }()
-
+    
     // 메인 컨텍스트 (UI 작업용)
     var context: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
-
+    
     // MARK: - Save Context
     func saveContext() {
         let context = persistentContainer.viewContext
@@ -46,7 +46,67 @@ class CoreDataRepository {
 
 // MARK: - Goal CRUD Methods
 extension CoreDataRepository {
+
+    func createNewGoal(
+        createDate: Date?,
+        iD: UUID?,
+        isComplete: Bool,
+        todayGoal: String?,
+        book: Book
+    ) {
+        let newGoal = Goal(context: context)
+        newGoal.createDate = createDate
+        newGoal.iD = iD
+        newGoal.isComplete = isComplete
+        newGoal.todayGoal = todayGoal
+        newGoal.book = book
+        saveContext()
+    }
     
+    func fetchGoals(bookID: UUID?) -> [Goal] {
+        // bookID로 Book을 조회
+        guard let book = fetchBook(iD: bookID),
+              let goalList = book.goalList else {
+            return [] // Book이 없거나 goalList가 nil이면 빈 배열 반환
+        }
+        
+        // NSSet을 [Goal]로 변환
+        return goalList.allObjects as? [Goal] ?? []
+    }
+    
+    func deleteGoal(iD: UUID?) {
+        let fetchRequest: NSFetchRequest<Goal> = Goal.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "iD == %@", iD?.uuidString ?? "")
+        do {
+            guard let goal = try context.fetch(fetchRequest).first else { return }
+            context.delete(goal)
+            saveContext()
+        } catch {
+            print("업데이트 실패: \(error)")
+        }
+    }
+    
+    func updateGoal(
+        createDate: Date?,
+        iD: UUID?,
+        isComplete: Bool,
+        todayGoal: String?,
+        book: Book
+    ) {
+        let fetchRequest: NSFetchRequest<Goal> = Goal.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "iD == %@", iD?.uuidString ?? "")
+        do {
+            guard let goal = try context.fetch(fetchRequest).first else { return }
+            goal.createDate = createDate
+            goal.iD = iD
+            goal.isComplete = isComplete
+            goal.todayGoal = todayGoal
+            goal.book = book
+            saveContext()
+        } catch {
+            print("업데이트 실패: \(error)")
+        }
+    }
 }
 
 // MARK: - Book CRUD Methods
@@ -67,8 +127,8 @@ extension CoreDataRepository {
         newBook.goalList = .init(array: goalList)
         saveContext()
     }
-
-    func fetchBooks() -> [Book] {
+    
+    func fetchBookList() -> [Book] {
         let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
         
         do {
@@ -78,7 +138,54 @@ extension CoreDataRepository {
             return []
         }
     }
-    // MARK: - Delete
+    
+    func fetchBook(iD: UUID?) -> Book? {
+        let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "iD == %@", iD?.uuidString ?? "")
+        do {
+            guard let book = try context.fetch(fetchRequest).first else { return nil }
+            return book
+        } catch {
+            print("업데이트 실패: \(error)")
+            return nil
+        }
+    }
+    
+    func deleteBook(iD: UUID?) {
+        let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "iD == %@", iD?.uuidString ?? "")
+        do {
+            guard let book = try context.fetch(fetchRequest).first else { return }
+            context.delete(book)
+            saveContext()
+        } catch {
+            print("업데이트 실패: \(error)")
+        }
+    }
+    
+    func updateBook(
+        title: String?,
+        isWrite: Bool,
+        createDate: Date?,
+        goalList: [Goal],
+        iD: UUID?
+    ) {
+        
+        let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "iD == %@", iD?.uuidString ?? "")
+        
+        do {
+            guard let book = try context.fetch(fetchRequest).first else { return }
+            book.title = title
+            book.isWrite = isWrite
+            book.createDate = createDate
+            book.goalList = .init(array: goalList)
+            saveContext()
+        } catch {
+            print("업데이트 실패: \(error)")
+        }
+    }
+    
     func resetBooks() {
         let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
         
@@ -92,37 +199,4 @@ extension CoreDataRepository {
             print("삭제 실패: \(error)")
         }
     }
-    
-    //    // 특정 조건으로 조회
-    //    func fetchUsers(withName name: String) -> [User] {
-    //        let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
-    //        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
-    //
-    //        do {
-    //            return try context.fetch(fetchRequest)
-    //        } catch {
-    //            print("조건 조회 실패: \(error)")
-    //            return []
-    //        }
-    //    }
-    //
-    // MARK: - Update
-    func updateBook(updateBook: Book) {
-        let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "iD == %@", updateBook.iD?.uuidString ?? "")
-        
-        do {
-            let books = try context.fetch(fetchRequest)
-            if let book = books.first {
-                book.title = updateBook.title
-                book.createDate = updateBook.createDate
-                book.goalList = updateBook.goalList
-                book.isWrite = updateBook.isWrite
-                saveContext()
-            }
-        } catch {
-            print("업데이트 실패: \(error)")
-        }
-    }
-    
 }
