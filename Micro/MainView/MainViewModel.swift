@@ -19,6 +19,13 @@ class MainViewModel: ObservableObject {
     @Published var state: MainViewState = .beforeEdit
     @Published var isTextFieldHidden = false
     
+    // coachMark
+    @Published var tabItemX: CGFloat = 0
+    @Published var tabItemY: CGFloat = 0
+    @Published var textFieldX: CGFloat = 0
+    @Published var textFieldY: CGFloat = 0
+    @Published var buttonY: CGFloat = 0
+    
     var attributedString: AttributedString {
         var string = AttributedString(firstLabelText)
         switch state {
