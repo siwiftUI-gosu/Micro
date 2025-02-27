@@ -12,6 +12,9 @@ struct CustomToast: View {
     let direction: ToastDirection
     let function: ToastFunction
     
+    @State private var toastOpacity: Double = 0.0
+    @State private var toastOffset: CGFloat = 0.0
+    
     var body: some View {
         HStack(alignment: .center, spacing: 8) {
             Text(title)
@@ -28,6 +31,40 @@ struct CustomToast: View {
         .background(function == .noti ? Color.primitive.lightGreen : Color.primitive.lightGray)
         .cornerRadius(10)
         .fixedSize()
+        .opacity(toastOpacity)
+        .offset(y: toastOffset)
+        .onAppear {
+            showToast()
+        }
+    }
+    
+    private func showToast() {
+        switch direction {
+        case .upToDown:
+            withAnimation(.easeOut(duration: 0.3).delay(0.001)) {
+                toastOpacity = 1.0
+                toastOffset = 0
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                withAnimation(.easeOut(duration: 2.0)) {
+                    toastOpacity = 0.0
+                    toastOffset = -16
+                }
+            }
+        case .downToUp:
+            withAnimation(.easeOut(duration: 0.3).delay(0.001)) {
+                toastOpacity = 1.0
+                toastOffset = 0
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                withAnimation(.easeOut(duration: 2.0)) {
+                    toastOpacity = 0.0
+                    toastOffset = 16
+                }
+            }
+        }
     }
 }
 
