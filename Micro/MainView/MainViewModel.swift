@@ -20,6 +20,7 @@ class MainViewModel: ObservableObject {
     @Published var isTextFieldHidden = false
     
     // coachMark
+    @Published var isCoachMarkVisible = true
     @Published var tabItemX: CGFloat = 0
     @Published var tabItemY: CGFloat = 0
     @Published var textFieldX: CGFloat = 0

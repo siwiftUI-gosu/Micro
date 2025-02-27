@@ -27,8 +27,8 @@ struct MainView: View {
                         GeometryReader { geometry in
                             Color.clear
                                 .onAppear {
-                                    viewModel.tabItemX = geometry.frame(in: .global).midX  - 28 + 8
-                                    viewModel.tabItemY = geometry.frame(in: .global).minY - 6
+                                    viewModel.tabItemX = geometry.frame(in: .global).midX - 28 + 8
+                                    viewModel.tabItemY = geometry.frame(in: .global).minY - 28 - 6
 //                                    print("내책 X \(viewModel.tabItemX)")
 //                                    print("내책 Y \(viewModel.tabItemY)")
                                 }
@@ -54,7 +54,7 @@ struct MainView: View {
                                 .padding(.vertical, 10)
                                 .background(Color.primitive.white)
                                 .cornerRadius(Constants.button.largeRadius)
-                                .onChange(of: viewModel.goalText, initial: false) {
+                                .onChange(of: viewModel.goalText) {
                                     viewModel.setButtonEnable()
                                     viewModel.setState(state: .editing)
                                     viewModel.setTextColor()
@@ -64,9 +64,9 @@ struct MainView: View {
                                     GeometryReader { geometry in
                                         Color.clear
                                             .onAppear {
-                                                viewModel.textFieldX = geometry.frame(in: .global).midX - 10
+                                                viewModel.textFieldX = geometry.frame(in: .global).midX - 16
 //                                                print("텍스트필드 X \(viewModel.textFieldX)")
-                                                viewModel.textFieldY = geometry.frame(in: .global).minY - 24 - 8
+                                                viewModel.textFieldY = geometry.frame(in: .global).minY - 6
 //                                                print("텍스트필드 Y \(viewModel.textFieldY)")
                                             }
                                     }
@@ -92,7 +92,7 @@ struct MainView: View {
                             GeometryReader { geometry in
                                 Color.clear
                                     .onAppear {
-                                        viewModel.buttonY = geometry.frame(in: .global).minY - 26 - 10
+                                        viewModel.buttonY = geometry.frame(in: .global).minY - 26
 //                                        print("하단버튼 Y \(viewModel.buttonY)")
                                     }
                             }
@@ -121,47 +121,104 @@ struct MainView: View {
 //                print("State changed to: \(newState), Button Title: \(newState.btnTitle)")
 //            }
 
-            // coachMark backGround
-            Rectangle()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.primitive.black)
-//                .opacity(0.86)
-                // 0.86 맞나?
-                .opacity(0.66)
+            if viewModel.isCoachMarkVisible {
+                // coachMark backGround
+                Rectangle()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Color.primitive.black)
+    //                .opacity(0.86)
+                    // 0.86 맞나?
+                    .opacity(0.66)
 
-            // coachMark
-            ZStack {
-                Circle()
-                    .foregroundColor(.primitive.white)
-                    .frame(maxWidth: 48, maxHeight: 48)
-                    .overlay {
-                        Text("내책")
-                            .frame(width: 50, height: 20)
+                // coachMark
+                ZStack {
+                    ZStack {
+                        Circle()
+                            .foregroundColor(.primitive.white)
+                            .frame(maxWidth: 48, maxHeight: 48)
+                            .overlay {
+                                Text("내책")
+                                    .frame(width: 50, height: 20)
+                            }
+                            .position(x: viewModel.tabItemX, y: viewModel.tabItemY)
+                        
+                        Image("icon_cancel")
+                            .frame(width: 40, height: 40)
+                            .position(x: Constants.screenWidth - 40, y: viewModel.tabItemY)
+                            .onTapGesture {
+                                viewModel.isCoachMarkVisible = false
+                            }
+
+                        HStack {
+                            Image("icon_arrow1")
+
+                            Text("예전 목표들은 이곳에서\n확인할 수 있어요.")
+                                .font(Font.system(size: 14).weight(.bold))
+                                .foregroundColor(.white)
+                        }
+                        // 화살표 가로 24, 텍스트 가로 137
+                        .position(x: viewModel.tabItemX + 28 + (24 + 137) / 2, y: viewModel.tabItemY + 28 + 4)
                     }
-                    .position(
-                        x: viewModel.tabItemX,
-                        y: viewModel.tabItemY - 28
-//                        x: 16 + 56 + 16 + 28,
-//                        y: 24
-                    )
 
-                TextField("목표를 작성해주세요", text: $viewModel.goalText) {}
-                    .padding(10)
-                    .font(Font.system(size: 32).weight(.bold))
-                    .background(Color.primitive.white)
-                    .cornerRadius(Constants.button.largeRadius)
-                    .disabled(true)
-                    .frame(maxWidth: .infinity, maxHeight: 58)
+                    VStack(spacing: 0) {
+                        TextField("목표를 작성해주세요", text: $viewModel.goalText) {}
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 10)
+                            .font(Font.system(size: 32).weight(.bold))
+                            .background(Color.primitive.white)
+                            .cornerRadius(Constants.button.largeRadius)
+                            .disabled(true)
+                            .frame(maxWidth: .infinity, maxHeight: 58)
+
+                        HStack {
+                            Image("icon_arrow2")
+
+                            Spacer()
+                                .frame(width: Constants.screenWidth / 3)
+                        }
+
+                        Spacer()
+                            .frame(height: 7)
+
+                        HStack(spacing: 0) {
+                            Text("하루에 ")
+                                .font(Font.system(size: 16).weight(.bold))
+                                .foregroundColor(.white)
+                            Text("하나의 목표만")
+                                .font(Font.system(size: 16).weight(.bold))
+                                .foregroundColor(.primitive.green)
+                            Text(" 작성하고")
+                                .font(Font.system(size: 16).weight(.bold))
+                                .foregroundColor(.white)
+                        }
+                    }
                     .position(x: viewModel.textFieldX, y: viewModel.textFieldY)
 
-                CustomButton(title: "목표를 달성했어요", foregroundColor: .primitive.white, backgroundColor: .primitive.green, borderColor: .clear, isEnabled: false) {}
-                    .padding(6)
-                    .position(
-                        x: Constants.screenWidth / 2 - 10,
-                        y: viewModel.buttonY
-                    )
+                    VStack(spacing: 0) {
+                        HStack(spacing: 0) {
+                            Text("목표를 ")
+                                .font(Font.system(size: 16).weight(.bold))
+                                .foregroundColor(.white)
+                            Text("달성")
+                                .font(Font.system(size: 16).weight(.bold))
+                                .foregroundColor(.primitive.green)
+                            Text("하면 눌러주세요.")
+                                .font(Font.system(size: 16).weight(.bold))
+                                .foregroundColor(.white)
+                        }
+                        
+                        Spacer()
+                            .frame(height: 9)
+                        
+                        Image("icon_arrow3")
+                    }
+                    .position(x: Constants.screenWidth / 2 - 16, y: viewModel.buttonY - 6 - 56)
+                    
+                    CustomButton(title: "목표를 달성했어요", foregroundColor: .primitive.white, backgroundColor: .primitive.green, borderColor: .clear, isEnabled: false) {}
+                        .position(x: Constants.screenWidth / 2 - 16, y: viewModel.buttonY - 6 - 4)
+                }
+                .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 10)
         }
     }
 }
@@ -191,13 +248,6 @@ struct TabButton: View {
         .onTapGesture {
             action()
         }
-    }
-}
-
-struct ViewPositionKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
     }
 }
 
