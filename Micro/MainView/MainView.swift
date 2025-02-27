@@ -27,10 +27,10 @@ struct MainView: View {
                         GeometryReader { geometry in
                             Color.clear
                                 .onAppear {
-                                    viewModel.tabItemX = geometry.frame(in: .local).midX
-                                    viewModel.tabItemY = geometry.frame(in: .global).minY
-                                    print("내책 X \(viewModel.tabItemX)")
-                                    print("내책 Y \(viewModel.tabItemY)")
+                                    viewModel.tabItemX = geometry.frame(in: .global).midX  - 28 + 8
+                                    viewModel.tabItemY = geometry.frame(in: .global).minY - 6
+//                                    print("내책 X \(viewModel.tabItemX)")
+//                                    print("내책 Y \(viewModel.tabItemY)")
                                 }
                         }
                     )
@@ -64,10 +64,10 @@ struct MainView: View {
                                     GeometryReader { geometry in
                                         Color.clear
                                             .onAppear {
-                                                viewModel.textFieldX = geometry.frame(in: .global).midX
-                                                print("텍스트필드 X \(viewModel.textFieldX)")
-                                                viewModel.textFieldY = geometry.frame(in: .global).minY
-                                                print("텍스트필드 Y \(viewModel.textFieldY)")
+                                                viewModel.textFieldX = geometry.frame(in: .global).midX - 10
+//                                                print("텍스트필드 X \(viewModel.textFieldX)")
+                                                viewModel.textFieldY = geometry.frame(in: .global).minY - 24 - 8
+//                                                print("텍스트필드 Y \(viewModel.textFieldY)")
                                             }
                                     }
                                 )
@@ -88,18 +88,18 @@ struct MainView: View {
                         CustomButton(title: viewModel.state.btnTitle, foregroundColor: viewModel.state.btnForegroundColor, backgroundColor: viewModel.state.btnBackgroundColor, borderColor: viewModel.state.btnBorderColor, isEnabled: viewModel.isButtonEnabled) {
                             viewModel.clickButton()
                         }
+                        .background(
+                            GeometryReader { geometry in
+                                Color.clear
+                                    .onAppear {
+                                        viewModel.buttonY = geometry.frame(in: .global).minY - 26 - 10
+//                                        print("하단버튼 Y \(viewModel.buttonY)")
+                                    }
+                            }
+                        )
                     }
                     .padding(.vertical, 6)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .background(
-                        GeometryReader { geometry in
-                            Color.clear
-                                .onAppear {
-                                    viewModel.buttonY = geometry.frame(in: .global).minY
-                                    print("하단버튼 Y \(viewModel.buttonY)")
-                                }
-                        }
-                    )
                     .tag(0)
 
                     VStack {
@@ -112,33 +112,56 @@ struct MainView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding(16)
+            .padding(.horizontal, 16)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
-            .onChange(of: viewModel.state) { newState in
-                print("State changed to: \(newState), Button Title: \(newState.btnTitle)")
-            }
+//            .onChange(of: viewModel.state) { newState in
+//                print("State changed to: \(newState), Button Title: \(newState.btnTitle)")
+//            }
+
+            // coachMark backGround
+            Rectangle()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.primitive.black)
+//                .opacity(0.86)
+                // 0.86 맞나?
+                .opacity(0.66)
 
             // coachMark
-            Text("내책")
-                .background(Color.red)
-                .frame(width: 50, height: 20)
-                .position(
-                    x: viewModel.tabItemX,
-                    y: viewModel.tabItemY
-                )
+            ZStack {
+                Circle()
+                    .foregroundColor(.primitive.white)
+                    .frame(maxWidth: 48, maxHeight: 48)
+                    .overlay {
+                        Text("내책")
+                            .frame(width: 50, height: 20)
+                    }
+                    .position(
+                        x: viewModel.tabItemX,
+                        y: viewModel.tabItemY - 28
+//                        x: 16 + 56 + 16 + 28,
+//                        y: 24
+                    )
 
-            Text("텍스트 필드")
-                .background(Color.red)
-                .frame(width: 50, height: 50)
-                .position(x: viewModel.textFieldX, y: viewModel.textFieldY)
+                TextField("목표를 작성해주세요", text: $viewModel.goalText) {}
+                    .padding(10)
+                    .font(Font.system(size: 32).weight(.bold))
+                    .background(Color.primitive.white)
+                    .cornerRadius(Constants.button.largeRadius)
+                    .disabled(true)
+                    .frame(maxWidth: .infinity, maxHeight: 58)
+                    .position(x: viewModel.textFieldX, y: viewModel.textFieldY)
 
-            Text("버튼")
-                .background(Color.red)
-                .frame(width: 50, height: 50)
-                .position(x: 0, y: viewModel.buttonY)
+                CustomButton(title: "목표를 달성했어요", foregroundColor: .primitive.white, backgroundColor: .primitive.green, borderColor: .clear, isEnabled: false) {}
+                    .padding(6)
+                    .position(
+                        x: Constants.screenWidth / 2 - 10,
+                        y: viewModel.buttonY
+                    )
+            }
+            .padding(.horizontal, 10)
         }
     }
 }
