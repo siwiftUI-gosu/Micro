@@ -15,7 +15,7 @@ class MainViewModel: ObservableObject {
     @Published var isShowToast: Bool = false
     @Published var selectedIndex: Int = 0
     @Published var textColor: Color = .primitive.green
-    
+
     @Published var state: MainViewState = .beforeEdit
     @Published var isTextFieldHidden = false
     
