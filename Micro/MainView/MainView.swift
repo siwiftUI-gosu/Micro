@@ -28,7 +28,7 @@ struct MainView: View {
                             Color.clear
                                 .onAppear {
                                     viewModel.tabItemX = geometry.frame(in: .global).midX - 28 + 8
-                                    viewModel.tabItemY = geometry.frame(in: .global).minY - 28 - 6
+                                    viewModel.tabItemY = geometry.frame(in: .global).minY - 28 - 8
 //                                    print("내책 X \(viewModel.tabItemX)")
 //                                    print("내책 Y \(viewModel.tabItemY)")
                                 }
@@ -55,8 +55,8 @@ struct MainView: View {
                                 .background(Color.primitive.white)
                                 .cornerRadius(Constants.button.largeRadius)
                                 .onChange(of: viewModel.goalText) {
-                                    viewModel.setButtonEnable()
                                     viewModel.setState(state: .editing)
+                                    viewModel.setButtonEnable()
                                     viewModel.setTextColor()
                                 }
                                 .disabled(viewModel.state != .editing && viewModel.state != .beforeEdit)
@@ -65,9 +65,7 @@ struct MainView: View {
                                         Color.clear
                                             .onAppear {
                                                 viewModel.textFieldX = geometry.frame(in: .global).midX - 16
-//                                                print("텍스트필드 X \(viewModel.textFieldX)")
                                                 viewModel.textFieldY = geometry.frame(in: .global).minY - 6
-//                                                print("텍스트필드 Y \(viewModel.textFieldY)")
                                             }
                                     }
                                 )
@@ -93,11 +91,17 @@ struct MainView: View {
                                 Color.clear
                                     .onAppear {
                                         viewModel.buttonY = geometry.frame(in: .global).minY - 26
-//                                        print("하단버튼 Y \(viewModel.buttonY)")
                                     }
                             }
                         )
                     }
+                    .gesture(
+                        TapGesture()
+                            .onEnded { _ in
+                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            }
+                            .exclusively(before: TapGesture().onEnded { _ in })
+                    )
                     .padding(.vertical, 6)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .tag(0)
@@ -112,22 +116,32 @@ struct MainView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .blur(radius: viewModel.isShowAchievedView ? 10 : 0)
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .onTapGesture {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
-//            .onChange(of: viewModel.state) { newState in
-//                print("State changed to: \(newState), Button Title: \(newState.btnTitle)")
-//            }
+            
+            // achievedView
+            if viewModel.isShowAchievedView {
+                Color.black.opacity(0.5)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+
+                GoalAchievedView(isGoalAchievedViewVisible: $viewModel.isShowAchievedView, todayGoalButtonAction: {
+//                                print("위에버튼 누를 때 동작쓰")
+                })
+                .frame(maxWidth: .infinity, alignment: .center)
+                .transition(.opacity)
+            }
 
             if viewModel.isCoachMarkVisible {
                 // coachMark backGround
                 Rectangle()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color.primitive.black)
-    //                .opacity(0.86)
-                    // 0.86 맞나?
+//                    .opacity(0.86)
                     .opacity(0.66)
 
                 // coachMark
@@ -141,7 +155,7 @@ struct MainView: View {
                                     .frame(width: 50, height: 20)
                             }
                             .position(x: viewModel.tabItemX, y: viewModel.tabItemY)
-                        
+
                         Image("icon_cancel")
                             .frame(width: 40, height: 40)
                             .position(x: Constants.screenWidth - 40, y: viewModel.tabItemY)
@@ -206,14 +220,14 @@ struct MainView: View {
                                 .font(Font.system(size: 16).weight(.bold))
                                 .foregroundColor(.white)
                         }
-                        
+
                         Spacer()
                             .frame(height: 9)
-                        
+
                         Image("icon_arrow3")
                     }
                     .position(x: Constants.screenWidth / 2 - 16, y: viewModel.buttonY - 6 - 56)
-                    
+
                     CustomButton(title: "목표를 달성했어요", foregroundColor: .primitive.white, backgroundColor: .primitive.green, borderColor: .clear, isEnabled: false) {}
                         .position(x: Constants.screenWidth / 2 - 16, y: viewModel.buttonY - 6 - 4)
                 }
