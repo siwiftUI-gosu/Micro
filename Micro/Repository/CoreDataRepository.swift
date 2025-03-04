@@ -132,7 +132,7 @@ extension CoreDataRepository {
         let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
         
         do {
-            return try context.fetch(fetchRequest)
+            return try context.fetch(fetchRequest).reversed()
         } catch {
             print("유저 조회 실패: \(error)")
             return []
