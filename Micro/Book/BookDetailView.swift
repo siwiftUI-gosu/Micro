@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BookView: View {
+struct BookDetailView: View {
     @ObservedObject private var viewModel: BookViewModel
     
     init(viewModel: BookViewModel) {
@@ -91,7 +91,7 @@ struct BookView: View {
 
 #Preview {
     let book = CoreDataRepository.shared.fetchBookList().first ?? Book(context: CoreDataRepository.shared.context)
-    BookView(viewModel: BookViewModel(book: book))
+    BookDetailView(viewModel: BookViewModel(book: book))
         .onAppear {
             print(book)
         }
