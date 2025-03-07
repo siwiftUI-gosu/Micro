@@ -22,8 +22,8 @@ struct CustomButton: View {
                 .multilineTextAlignment(.center)
                 .foregroundColor(foregroundColor)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+//                .padding(.horizontal, 16)
+//                .padding(.vertical, 10)
                 .background(backgroundColor)
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)

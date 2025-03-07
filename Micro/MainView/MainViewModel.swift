@@ -8,23 +8,34 @@
 import SwiftUI
 
 class MainViewModel: ObservableObject {
+    @Published var todayGoal: Goal?
+    
     @Published var firstLabelText: String = "오늘 단 하나,"
     @Published var goalText: String = ""
     @Published var secondLabelText: String = "을/를 할거야"
     @Published var isButtonEnabled: Bool = false
     @Published var isShowToast: Bool = false
+    @Published var isShowAchievedView: Bool = false
     @Published var selectedIndex: Int = 0
     @Published var textColor: Color = .primitive.green
 
     @Published var state: MainViewState = .beforeEdit
     @Published var isTextFieldHidden = false
     
+    @Published var isBookViewPresented = false
+    
     // coachMark
+    @Published var isCoachMarkVisible = true
+    @Published var safeHeight: CGFloat = 0
     @Published var tabItemX: CGFloat = 0
     @Published var tabItemY: CGFloat = 0
     @Published var textFieldX: CGFloat = 0
     @Published var textFieldY: CGFloat = 0
     @Published var buttonY: CGFloat = 0
+    
+    init() {
+        fetchFirstAccessStatus()
+    }
     
     var attributedString: AttributedString {
         var string = AttributedString(firstLabelText)
@@ -45,19 +56,27 @@ class MainViewModel: ObservableObject {
     }
     
     func setState(state: MainViewState) {
+        self.state = state
+
         switch state {
         case .beforeEdit, .editing:
             self.state = goalText.isEmpty ? .beforeEdit : .editing
-        default:
-            if state == .completEdit {
-                isShowToast = true
-                print(Timer().timeInterval)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
-                    print(print(Timer().timeInterval))
-                    self?.isShowToast = false
+
+        case .completEdit:
+            isShowToast = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+                self?.isShowToast = false
+            }
+
+        case .achieveGoal:
+            DispatchQueue.main.async { [weak self] in
+                withAnimation {
+                    self?.isShowAchievedView = true
                 }
             }
-            self.state = state
+            isTextFieldHidden = true
+            firstLabelText = "하나의 목표와 함께"
+            secondLabelText = "내일 다시 뵈어요 ✨"
         }
     }
     
@@ -74,12 +93,14 @@ class MainViewModel: ObservableObject {
         case .beforeEdit:
             break
         case .editing:
+            saveGoal()
             setState(state: .completEdit)
+            guard let goal = todayGoal else { return }
+            CoreDataRepository.shared.updateGoal(createDate: goal.createDate, iD: goal.iD, isComplete: false, todayGoal: goalText, book: goal.book)
         case .completEdit:
-            isTextFieldHidden = true
             setState(state: .achieveGoal)
-            firstLabelText = "하나의 목표와 함께"
-            secondLabelText = "내일 다시 뵈어요 ✨"
+            guard let goal = todayGoal else { return }
+            CoreDataRepository.shared.updateGoal(createDate: goal.createDate, iD: goal.iD, isComplete: true, todayGoal: goalText, book: goal.book)
         case .achieveGoal:
             break
         }
@@ -87,6 +108,34 @@ class MainViewModel: ObservableObject {
     
     func setIndex(index: Int) {
         selectedIndex = index
+    }
+    
+    func fetchFirstAccessStatus() {
+        isCoachMarkVisible = !CoreDataRepository.shared.fetchFirstAccess()
+        if isCoachMarkVisible {
+            CoreDataRepository.shared.createFirstAccess()
+        }
+        fetchTodayGoal()
+        setButtonEnable()
+    }
+    
+    func fetchTodayGoal() {
+        CoreDataRepository.shared.printAllData()
+        todayGoal = CoreDataRepository.shared.fetchTodayGoal()
+        if let goal = todayGoal,
+           let todayGoal = goal.todayGoal
+        {
+            goalText = todayGoal
+            state = .completEdit
+            if goal.isComplete {
+                setState(state: .achieveGoal)
+            }
+        }
+    }
+    
+    func saveGoal() {
+        let book = CoreDataRepository.shared.createNewBook(title: nil, createDate: Date(), goalList: [], iD: UUID())
+        todayGoal = CoreDataRepository.shared.createNewGoal(createDate: Date(), iD: UUID(), isComplete: false, todayGoal: goalText, book: book)
     }
 }
 
@@ -113,7 +162,7 @@ extension MainViewModel {
         var btnForegroundColor: Color {
             switch self {
             case .beforeEdit:
-                .primitive.lightGray
+                    .primitive.darkGray
             case .editing:
                 .primitive.green
             case .completEdit:
@@ -126,7 +175,7 @@ extension MainViewModel {
         var btnBackgroundColor: Color {
             switch self {
             case .beforeEdit:
-                .primitive.darkGray
+                    .primitive.lightGray
             case .editing:
                 .primitive.white
             case .completEdit:
