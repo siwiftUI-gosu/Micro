@@ -22,7 +22,6 @@ struct MainTabButton: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 10)
-//        .frame(minWidth: 56, maxWidth: 56, maxHeight: .infinity, alignment: .center)
         .frame(width: 56, height: 48, alignment: .center)
         .overlay(
             Rectangle()

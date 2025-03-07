@@ -122,25 +122,16 @@ extension CoreDataRepository {
     }
     
     func fetchTodayGoal() -> Goal? {
-        let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "isWrite == %@", NSNumber(value: true))
-        fetchRequest.fetchLimit = 1
-        
-        do {
-            guard let book = try context.fetch(fetchRequest).first,
-                  let goalList = book.goalList
-            else {
-                print("Writable Book 없음")
+        let fetchRequest: NSFetchRequest<Goal> = Goal.fetchRequest()
+            
+            do {
+                let goals = try context.fetch(fetchRequest)
+                
+                return goals.first { $0.createDate?.toString() == Date().toString() }
+            } catch {
+                print("Goal 객체 조회 실패: \(error)")
                 return nil
             }
-            
-            let goals = goalList.allObjects as? [Goal] ?? []
-            
-            return goals.first { $0.createDate?.toString() == Date().toString() }
-        } catch {
-            print("Writable Book 조회 실패: \(error)")
-            return nil
-        }
     }
     
     func deleteGoal(iD: UUID?) {
@@ -175,6 +166,20 @@ extension CoreDataRepository {
             print("업데이트 성공")
         } catch {
             print("업데이트 실패: \(error)")
+        }
+    }
+    
+    func resetGoals() {
+        let fetchRequest: NSFetchRequest<Goal> = Goal.fetchRequest()
+        
+        do {
+            let goals = try context.fetch(fetchRequest)
+            for goal in goals {
+                context.delete(goal)
+            }
+            saveContext()
+        } catch {
+            print("삭제 실패: \(error)")
         }
     }
 }

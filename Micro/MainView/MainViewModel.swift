@@ -93,6 +93,7 @@ class MainViewModel: ObservableObject {
         case .beforeEdit:
             break
         case .editing:
+            saveGoal()
             setState(state: .completEdit)
             guard let goal = todayGoal else { return }
             CoreDataRepository.shared.updateGoal(createDate: goal.createDate, iD: goal.iD, isComplete: false, todayGoal: goalText, book: goal.book)
@@ -114,18 +115,12 @@ class MainViewModel: ObservableObject {
         if isCoachMarkVisible {
             CoreDataRepository.shared.createFirstAccess()
         }
-//        if isCoachMarkVisible {
-//            CoreDataRepository.shared.createFirstAccess()
-//            let book = CoreDataRepository.shared.createNewBook(title: nil, createDate: Date(), goalList: [], iD: UUID())
-//            todayGoal = CoreDataRepository.shared.createNewGoal(createDate: Date(), iD: UUID(), isComplete: false, todayGoal: goalText, book: book)
-//        } else {
-//            fetchTodayGoal()
-//        }
         fetchTodayGoal()
         setButtonEnable()
     }
     
     func fetchTodayGoal() {
+        CoreDataRepository.shared.printAllData()
         todayGoal = CoreDataRepository.shared.fetchTodayGoal()
         if let goal = todayGoal,
            let todayGoal = goal.todayGoal
@@ -135,10 +130,12 @@ class MainViewModel: ObservableObject {
             if goal.isComplete {
                 setState(state: .achieveGoal)
             }
-        } else {
-            let book = CoreDataRepository.shared.createNewBook(title: nil, createDate: Date(), goalList: [], iD: UUID())
-            todayGoal = CoreDataRepository.shared.createNewGoal(createDate: Date(), iD: UUID(), isComplete: false, todayGoal: goalText, book: book)
         }
+    }
+    
+    func saveGoal() {
+        let book = CoreDataRepository.shared.createNewBook(title: nil, createDate: Date(), goalList: [], iD: UUID())
+        todayGoal = CoreDataRepository.shared.createNewGoal(createDate: Date(), iD: UUID(), isComplete: false, todayGoal: goalText, book: book)
     }
 }
 

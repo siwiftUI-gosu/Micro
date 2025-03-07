@@ -76,6 +76,12 @@ struct CoreDataTestView: View {
             } label: {
                 Text("ResetFirstAccess")
             }
+            
+            Button {
+                CoreDataRepository.shared.resetGoals()
+            } label: {
+                Text("ResetGoals")
+            }
         }
     }
 }
