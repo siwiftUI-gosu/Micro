@@ -22,8 +22,11 @@ class MainViewModel: ObservableObject {
     @Published var state: MainViewState = .beforeEdit
     @Published var isTextFieldHidden = false
     
+    @Published var isBookViewPresented = false
+    
     // coachMark
     @Published var isCoachMarkVisible = true
+    @Published var safeHeight: CGFloat = 0
     @Published var tabItemX: CGFloat = 0
     @Published var tabItemY: CGFloat = 0
     @Published var textFieldX: CGFloat = 0
@@ -162,7 +165,7 @@ extension MainViewModel {
         var btnForegroundColor: Color {
             switch self {
             case .beforeEdit:
-                .primitive.lightGray
+                    .primitive.darkGray
             case .editing:
                 .primitive.green
             case .completEdit:
@@ -175,7 +178,7 @@ extension MainViewModel {
         var btnBackgroundColor: Color {
             switch self {
             case .beforeEdit:
-                .primitive.darkGray
+                    .primitive.lightGray
             case .editing:
                 .primitive.white
             case .completEdit:

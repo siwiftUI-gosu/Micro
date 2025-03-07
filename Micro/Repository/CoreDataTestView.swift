@@ -70,6 +70,12 @@ struct CoreDataTestView: View {
             } label: {
                 Text("Delete Goal")
             }
+            
+            Button {
+                CoreDataRepository.shared.resetFirstAccess()
+            } label: {
+                Text("ResetFirstAccess")
+            }
         }
     }
 }

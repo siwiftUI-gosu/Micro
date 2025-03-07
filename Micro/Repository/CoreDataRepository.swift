@@ -295,4 +295,18 @@ extension CoreDataRepository {
             return false
         }
     }
+    
+    func resetFirstAccess() {
+        let fetchRequest: NSFetchRequest<FirstAccess> = FirstAccess.fetchRequest()
+        
+        do {
+            let accesses = try context.fetch(fetchRequest)
+            for access in accesses {
+                context.delete(access)
+            }
+            saveContext()
+        } catch {
+            print("삭제 실패: \(error)")
+        }
+    }
 }
