@@ -8,24 +8,25 @@
 import SwiftUI
 
 struct MyBooksView: View {
+    @State var isBookViewPresented = false
     @State var isEditMode: Bool = false
     @State var selectedItems: Set<Book> = []
     @State var showAlert = false
     @State var showToast = false
     let items = CoreDataRepository.shared.fetchBookList()
+    @State var selectedItem: Book?
     
     var body: some View {
         GeometryReader { geometry in
             let spacing: CGFloat = 20
-            let totalSpacing: CGFloat = 16 * 2  // 좌우 여백 포함
-            let columnWidth = (geometry.size.width - totalSpacing - (spacing * 2)) / 3  // 3개의 셀 + 2개의 간격
+            let totalSpacing: CGFloat = 16 * 2 // 좌우 여백 포함
+            let columnWidth = (geometry.size.width - totalSpacing - (spacing * 2)) / 3 // 3개의 셀 + 2개의 간격
             
             let columns = [
                 GridItem(.fixed(columnWidth), spacing: spacing),
                 GridItem(.fixed(columnWidth), spacing: spacing),
                 GridItem(.fixed(columnWidth), spacing: spacing)
             ]
-            
             
             VStack(alignment: .trailing, spacing: 0) {
                 HStack(spacing: 0) {
@@ -73,7 +74,7 @@ struct MyBooksView: View {
                                 isEditMode = false
                                 showToastMessage()
                             }
-                            Button("취소", role: .cancel) { }
+                            Button("취소", role: .cancel) {}
                         } message: {
                             Text("정말 삭제하시겠습니까?")
                         }
@@ -104,15 +105,18 @@ struct MyBooksView: View {
                                             selectedItems.insert(item)
                                         }
                                     } else {
-                                        // 책 선택 코드 작성
+                                        selectedItem = item
                                     }
+                                }
+                                .fullScreenCover(item: $selectedItem) { book in
+                                    BookDetailView(viewModel: BookViewModel(book: book))
                                 }
                             }
                         }
                     }
                 }
             }
-            .padding(.horizontal, 16)  // 좌우 패딩 설정
+            .padding(.horizontal, 16) // 좌우 패딩 설정
             .overlay(
                 VStack {
                     if showToast {
@@ -127,7 +131,6 @@ struct MyBooksView: View {
                 .opacity(showToast ? 1 : 0)
                 .animation(.easeInOut(duration: 0.3), value: showToast)
             )
-
         }
     }
     
@@ -142,7 +145,6 @@ struct MyBooksView: View {
         }
     }
 }
-
 
 #Preview {
     MyBooksView()

@@ -37,23 +37,14 @@ struct MainView: View {
                 }
                 .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48, alignment: .leading)
                     
-                Spacer()
-                    .frame(height: 40)
-                    
                 TabView(selection: $viewModel.selectedIndex) {
                     MainEditView(viewModel: viewModel)
                         .padding(.vertical, 6)
                         .frame(maxWidth: .infinity, alignment: .topLeading)
                         .tag(0)
-                        
-                    VStack {
-                        Text("내 책")
-                            .font(.largeTitle)
-                            .onTapGesture {
-                                viewModel.isBookViewPresented = true
-                            }
-                    }
-                    .tag(1)
+                    
+                    MyBooksView()
+                        .tag(1)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

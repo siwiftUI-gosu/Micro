@@ -22,8 +22,6 @@ class MainViewModel: ObservableObject {
     @Published var state: MainViewState = .beforeEdit
     @Published var isTextFieldHidden = false
     
-    @Published var isBookViewPresented = false
-    
     // coachMark
     @Published var isCoachMarkVisible = true
     @Published var safeHeight: CGFloat = 0
