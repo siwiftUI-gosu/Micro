@@ -12,6 +12,9 @@ struct MainEditView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            Spacer()
+                .frame(height: 40)
+            
             Text(viewModel.attributedString)
                 .font(Font.system(size: 32).weight(.bold))
                 .foregroundColor(.primitive.black)
