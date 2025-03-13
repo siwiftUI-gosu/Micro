@@ -9,6 +9,7 @@ import SwiftUI
 
 class MainViewModel: ObservableObject {
     @Published var todayGoal: Goal?
+    @Published var writingBook: Book
     
     @Published var firstLabelText: String = "오늘 단 하나,"
     @Published var goalText: String = ""
@@ -31,7 +32,8 @@ class MainViewModel: ObservableObject {
     @Published var textFieldY: CGFloat = 0
     @Published var buttonY: CGFloat = 0
     
-    init() {
+    init(writingBook: Book? = nil) {
+        self.writingBook = CoreDataRepository.shared.fetchWritingBook() ?? CoreDataRepository.shared.createNewBook(title: nil, createDate: Date(), goalList: [], iD: UUID())
         fetchFirstAccessStatus()
     }
     
@@ -118,22 +120,21 @@ class MainViewModel: ObservableObject {
     }
     
     func fetchTodayGoal() {
-        CoreDataRepository.shared.printAllData()
         todayGoal = CoreDataRepository.shared.fetchTodayGoal()
         if let goal = todayGoal,
            let todayGoal = goal.todayGoal
         {
             goalText = todayGoal
-            state = .completEdit
             if goal.isComplete {
                 setState(state: .achieveGoal)
+            } else {
+                state = .completEdit
             }
         }
     }
     
     func saveGoal() {
-        let book = CoreDataRepository.shared.createNewBook(title: nil, createDate: Date(), goalList: [], iD: UUID())
-        todayGoal = CoreDataRepository.shared.createNewGoal(createDate: Date(), iD: UUID(), isComplete: false, todayGoal: goalText, book: book)
+        todayGoal = CoreDataRepository.shared.createNewGoal(createDate: Date(), iD: UUID(), isComplete: false, todayGoal: goalText, book: writingBook)
     }
 }
 
@@ -160,7 +161,7 @@ extension MainViewModel {
         var btnForegroundColor: Color {
             switch self {
             case .beforeEdit:
-                    .primitive.darkGray
+                .primitive.darkGray
             case .editing:
                 .primitive.green
             case .completEdit:
@@ -173,7 +174,7 @@ extension MainViewModel {
         var btnBackgroundColor: Color {
             switch self {
             case .beforeEdit:
-                    .primitive.lightGray
+                .primitive.lightGray
             case .editing:
                 .primitive.white
             case .completEdit:
