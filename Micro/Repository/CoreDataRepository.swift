@@ -227,6 +227,18 @@ extension CoreDataRepository {
         }
     }
     
+    func fetchWritingBook() -> Book? {
+        let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "isWrite == %@", NSNumber(value: true))
+        do {
+            guard let book = try context.fetch(fetchRequest).first else { return nil }
+            return book
+        } catch {
+            print("업데이트 실패: \(error)")
+            return nil
+        }
+    }
+    
     func deleteBook(iD: UUID?) {
         let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "iD == %@", iD?.uuidString ?? "")
