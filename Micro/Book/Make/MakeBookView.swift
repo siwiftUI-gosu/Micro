@@ -42,7 +42,8 @@ struct MakeBookView: View {
             Spacer()
  
             HStack(spacing: 8) {
-                Image(systemName: "pencil.circle")
+                Image("icon_warning")
+                    .frame(width: 20, height: 20)
                         
                 Text("책의 제목은 만들면 수정할 수 없어요")
                     .font(Font.system(size: 14))
