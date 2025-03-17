@@ -13,6 +13,7 @@ class BookViewModel: ObservableObject {
     @Published var goals = [Goal]()
     @Published var attributedText = AttributedString()
     @Published var goalState = GoalState.empty
+    @Published var isPresentMakeView = false
 
     var goalList: [Goal] {
         switch selectedIndex {
@@ -52,6 +53,15 @@ class BookViewModel: ObservableObject {
         } else {
             attributedText = "도전 중인 목표가 없어요".toAttributedString(highlightText: "도전 중인 목표가 없어요", color: .primitive.lightGray)
             goalState = .empty
+        }
+    }
+    
+    func clickButton() {
+        switch goalState {
+        case .complete:
+            isPresentMakeView = true
+        default:
+            break
         }
     }
 }

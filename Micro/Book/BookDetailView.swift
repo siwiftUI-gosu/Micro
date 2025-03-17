@@ -16,6 +16,8 @@ struct BookDetailView: View {
     
     var body: some View {
         VStack {
+            BackNavigationBar(title: viewModel.book.title ?? "책 이름")
+            
             VStack(alignment: .leading, spacing: 8) {
                 Text("나는 오늘")
                     .font(Font.system(size: 16).weight(.bold))
@@ -51,41 +53,129 @@ struct BookDetailView: View {
                 }
             }
             
-            switch viewModel.goalState {
-            case .empty:
-                Text("아직 도전한 목표가 없어요 😞")
-                    .font(Font.system(size: 14))
-                    .foregroundStyle(Color.primitive.darkGray)
-                    .padding(.vertical, 40)
-                    .padding(.horizontal, 16)
-                    .frame(maxWidth: .infinity)
-                    .multilineTextAlignment(.center)
-                Spacer()
-            case .notComplete:
-                Text("하루가 지나면 이 곳에서 볼 수 있어요! 💪")
-                    .font(Font.system(size: 14))
-                    .foregroundStyle(Color.primitive.darkGray)
-                    .padding(.vertical, 40)
-                    .padding(.horizontal, 16)
-                    .frame(maxWidth: .infinity)
-                    .multilineTextAlignment(.center)
-                Spacer()
-            case .complete:
-                List {
-                    ForEach(viewModel.goalList, id: \.iD) { goal in
-                        GoalListItem(date: goal.createDate ?? Date(), goal: goal.todayGoal ?? "No Goal", isComplete: goal.isComplete)
-                            .listRowInsets(EdgeInsets())
+            switch viewModel.selectedIndex {
+            case 0:
+                // 전체
+                switch viewModel.goalState {
+                case .empty:
+                    Text("아직 도전한 목표가 없어요 😞")
+                        .font(Font.system(size: 14))
+                        .foregroundStyle(Color.primitive.darkGray)
+                        .padding(.vertical, 40)
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                    Spacer()
+                case .notComplete:
+                    if viewModel.totalGoalCount < 2 {
+                        Text("아직 도전한 목표가 없어요 😞")
+                            .font(Font.system(size: 14))
+                            .foregroundStyle(Color.primitive.darkGray)
+                            .padding(.vertical, 40)
+                            .padding(.horizontal, 16)
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
+                        Spacer()
+                    } else {
+                        List {
+                            ForEach(viewModel.goalList, id: \.iD) { goal in
+                                GoalListItem(date: goal.createDate ?? Date(), goal: goal.todayGoal ?? "No Goal", isComplete: goal.isComplete)
+                                    .listRowInsets(EdgeInsets())
+                            }
+                        }
+                        .scrollIndicators(.never)
+                        .listStyle(.plain)
+                        .padding(0)
+                    }
+                case .complete:
+                    if viewModel.totalGoalCount < 2 {
+                        Text("하루가 지나면 이 곳에서 볼 수 있어요! 💪")
+                            .font(Font.system(size: 14))
+                            .foregroundStyle(Color.primitive.darkGray)
+                            .padding(.vertical, 40)
+                            .padding(.horizontal, 16)
+                            .frame(maxWidth: .infinity)
+                            .multilineTextAlignment(.center)
+                        Spacer()
+                    } else {
+                        List {
+                            ForEach(viewModel.goalList, id: \.iD) { goal in
+                                GoalListItem(date: goal.createDate ?? Date(), goal: goal.todayGoal ?? "No Goal", isComplete: goal.isComplete)
+                                    .listRowInsets(EdgeInsets())
+                            }
+                        }
+                        .scrollIndicators(.never)
+                        .listStyle(.plain)
+                        .padding(0)
                     }
                 }
-                .scrollIndicators(.never)
-                .listStyle(.plain)
-                .padding(0)
+                
+            case 1:
+                // 달성
+                if viewModel.completeGoalCount == 0 {
+                    Text("아직 기록이 없어요 🥺")
+                        .font(Font.system(size: 14))
+                        .foregroundStyle(Color.primitive.darkGray)
+                        .padding(.vertical, 40)
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                    Spacer()
+                } else {
+                    List {
+                        ForEach(viewModel.goalList, id: \.iD) { goal in
+                            GoalListItem(date: goal.createDate ?? Date(), goal: goal.todayGoal ?? "No Goal", isComplete: goal.isComplete)
+                                .listRowInsets(EdgeInsets())
+                        }
+                    }
+                    .scrollIndicators(.never)
+                    .listStyle(.plain)
+                    .padding(0)
+                }
+                
+            case 2:
+                // 미달성
+                if viewModel.notCompleteGoalCount == 0 {
+                    Text("아직 기록이 없어요 🥺")
+                        .font(Font.system(size: 14))
+                        .foregroundStyle(Color.primitive.darkGray)
+                        .padding(.vertical, 40)
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                    Spacer()
+                } else {
+                    List {
+                        ForEach(viewModel.goalList, id: \.iD) { goal in
+                            GoalListItem(date: goal.createDate ?? Date(), goal: goal.todayGoal ?? "No Goal", isComplete: goal.isComplete)
+                                .listRowInsets(EdgeInsets())
+                        }
+                    }
+                    .scrollIndicators(.never)
+                    .listStyle(.plain)
+                    .padding(0)
+                }
+            
+            default:
+                Text("아직 기록이 없어요 🥺")
+                    .font(Font.system(size: 14))
+                    .foregroundStyle(Color.primitive.darkGray)
+                    .padding(.vertical, 40)
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
+                Spacer()
             }
             
-            CustomButton(title: viewModel.goalState.title, foregroundColor: viewModel.goalState.foregroundColor, backgroundColor: viewModel.goalState.backgroundColor, borderColor: .clear, isEnabled: viewModel.goalState.isEnabled) {}
+            CustomButton(title: viewModel.goalState.title, foregroundColor: viewModel.goalState.foregroundColor, backgroundColor: viewModel.goalState.backgroundColor, borderColor: .clear, isEnabled: viewModel.goalState.isEnabled) {
+                viewModel.clickButton()
+            }
         }
         .padding(.horizontal, 16)
         .padding(.top, 40)
+        .fullScreenCover(isPresented: $viewModel.isPresentMakeView) {
+            MakeBookView(viewModel: MakeBookViewModel())
+        }
     }
 }
 
