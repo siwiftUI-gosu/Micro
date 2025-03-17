@@ -19,8 +19,7 @@ struct MyBooksView: View {
     var body: some View {
         GeometryReader { geometry in
             let spacing: CGFloat = 20
-            let totalSpacing: CGFloat = 16 * 2 // 좌우 여백 포함
-            let columnWidth = (geometry.size.width - totalSpacing - (spacing * 2)) / 3 // 3개의 셀 + 2개의 간격
+            let columnWidth = (geometry.size.width - (spacing * 2)) / 3 // 3개의 셀 + 2개의 간격
             
             let columns = [
                 GridItem(.fixed(columnWidth), spacing: spacing),
@@ -116,7 +115,6 @@ struct MyBooksView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16) // 좌우 패딩 설정
             .overlay(
                 VStack {
                     if showToast {
