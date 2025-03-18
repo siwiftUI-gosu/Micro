@@ -192,9 +192,11 @@ extension CoreDataRepository {
         isWrite: Bool = true,
         createDate: Date?,
         goalList: [Goal],
-        iD: UUID?
+        iD: UUID?,
+        isGuide: Bool = false
     ) -> Book {
         let newBook = Book(context: context)
+        newBook.isGuide = isGuide
         newBook.title = title
         newBook.isWrite = isWrite
         newBook.createDate = createDate

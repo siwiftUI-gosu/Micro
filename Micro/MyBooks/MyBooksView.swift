@@ -101,14 +101,20 @@ struct MyBooksView: View {
                                         if isSelected {
                                             selectedItems.remove(item)
                                         } else {
-                                            selectedItems.insert(item)
+                                            if !item.isWrite {
+                                                selectedItems.insert(item)
+                                            }
                                         }
                                     } else {
                                         selectedItem = item
                                     }
                                 }
                                 .fullScreenCover(item: $selectedItem) { book in
-                                    BookDetailView(viewModel: BookViewModel(book: book))
+                                    if book.isGuide {
+                                        ReadMeView()
+                                    } else {
+                                        BookDetailView(viewModel: BookViewModel(book: book))
+                                    }
                                 }
                             }
                         }
