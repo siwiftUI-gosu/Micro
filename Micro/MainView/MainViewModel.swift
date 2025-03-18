@@ -65,8 +65,11 @@ class MainViewModel: ObservableObject {
         case .completEdit:
             isShowToast = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
-                self?.isShowToast = false
+                withAnimation {
+                    self?.isShowToast = false
+                }
             }
+            break
 
         case .achieveGoal:
             DispatchQueue.main.async { [weak self] in
