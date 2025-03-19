@@ -10,6 +10,7 @@ import SwiftUI
 class MakeBookViewModel: ObservableObject {
     @Published var bookTitle = ""
     @Published var bookTitleState = MakeBookState.beforeEdit
+    @Published var isPresentCompleteView = false
     
     func setState() {
         if bookTitle.isEmpty {

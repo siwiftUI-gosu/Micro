@@ -87,15 +87,20 @@ struct MyBooksView: View {
                                 let goals: [Goal] = nsSet.allObjects.compactMap { $0 as? Goal }
                                 let completePercent = goals.count == 0 ? 1 : Double(goals.filter { $0.isComplete == true }.count) / Double(goals.count)
                                 let isSelected = selectedItems.contains(item)
-                                BookView(
-                                    isEditMode: $isEditMode,
-                                    title: item.title,
-                                    isWrite: item.isWrite,
-                                    completePercent: completePercent,
-                                    isSelected: .constant(isSelected)
-                                )
-                                .frame(width: columnWidth)
-                                .aspectRatio(1 / 1.45, contentMode: .fit)
+                                
+                                NavigationLink(destination: {
+                                    BookDetailView(viewModel: BookViewModel(book: item), mainViewModel: MainViewModel(writingBook: item))
+                                }, label: {
+                                    BookView(
+                                        isEditMode: $isEditMode,
+                                        title: item.title,
+                                        isWrite: item.isWrite,
+                                        completePercent: completePercent,
+                                        isSelected: .constant(isSelected)
+                                    )
+                                    .frame(width: columnWidth)
+                                    .aspectRatio(1 / 1.45, contentMode: .fit)
+                                })
                                 .onTapGesture {
                                     if isEditMode {
                                         if isSelected {
@@ -106,9 +111,6 @@ struct MyBooksView: View {
                                     } else {
                                         selectedItem = item
                                     }
-                                }
-                                .fullScreenCover(item: $selectedItem) { book in
-                                    BookDetailView(viewModel: BookViewModel(book: book))
                                 }
                             }
                         }

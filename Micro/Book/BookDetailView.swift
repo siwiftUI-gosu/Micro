@@ -9,17 +9,18 @@ import SwiftUI
 
 struct BookDetailView: View {
     @ObservedObject private var viewModel: BookViewModel
+    @ObservedObject private var mainViewModel: MainViewModel
+    @Environment(\.dismiss) var dismiss
     
-    init(viewModel: BookViewModel) {
+    init(viewModel: BookViewModel, mainViewModel: MainViewModel) {
         self.viewModel = viewModel
+        self.mainViewModel = mainViewModel
     }
     
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
                 VStack {
-                    BackNavigationBar(title: viewModel.book.title ?? "책 이름")
-                        
                     VStack(alignment: .leading, spacing: 8) {
                         Text("나는 오늘")
                             .font(Font.system(size: 16).weight(.bold))
@@ -58,31 +59,32 @@ struct BookDetailView: View {
                             if viewModel.totalGoalList.count == 0 {
                                 switch viewModel.goalState {
                                 case .empty:
-                                    emptyMessageView(title:viewModel.goalState.emptyTitle)
+                                    emptyMessageView(title: viewModel.goalState.emptyTitle)
                                 case .notComplete:
-                                    emptyMessageView(title:viewModel.goalState.emptyTitle)
+                                    emptyMessageView(title: viewModel.goalState.emptyTitle)
                                 case .complete:
-                                    emptyMessageView(title:viewModel.goalState.emptyTitle)
+                                    emptyMessageView(title: viewModel.goalState.emptyTitle)
                                 }
                             } else {
                                 goalListView(goals: viewModel.totalGoalList)
                             }
+
                         case 1:
                             if viewModel.completeGoalList.count == 0 {
-                                emptyMessageView(title:"아직 기록이 없어요 🥺")
+                                emptyMessageView(title: "아직 기록이 없어요 🥺")
                             } else {
                                 goalListView(goals: viewModel.completeGoalList)
                             }
                                 
                         case 2:
                             if viewModel.notCompleteGoalList.count == 0 {
-                                emptyMessageView(title:"아직 기록이 없어요 🥺")
+                                emptyMessageView(title: "아직 기록이 없어요 🥺")
                             } else {
                                 goalListView(goals: viewModel.notCompleteGoalList)
                             }
                             
                         default:
-                            emptyMessageView(title:"아직 기록이 없어요 🥺")
+                            emptyMessageView(title: "아직 기록이 없어요 🥺")
                         }
                     }
                     .padding(.horizontal, 16)
@@ -101,14 +103,23 @@ struct BookDetailView: View {
                 isEnabled: viewModel.goalState.isEnabled
             ) {
                 viewModel.clickButton()
+                if viewModel.goalState == .empty {
+                    // 준영아 여기서 탭바 바꿔줘야해
+//                    mainViewModel.setIndex(index: 0)
+//                    dismiss()
+                }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 10)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .fullScreenCover(isPresented: $viewModel.isPresentMakeView) {
+        .navigationDestination(isPresented: $viewModel.isPresentMakeView) {
             MakeBookView(viewModel: MakeBookViewModel())
+                .onDisappear {
+                    viewModel.isPresentMakeView = false
+                }
         }
+        .customNavigationBar(title: viewModel.book.title ?? "책 이름")
     }
 }
 
@@ -138,7 +149,7 @@ private extension BookDetailView {
 
 #Preview {
     let book = CoreDataRepository.shared.fetchBookList().first ?? Book(context: CoreDataRepository.shared.context)
-    BookDetailView(viewModel: BookViewModel(book: book))
+    BookDetailView(viewModel: BookViewModel(book: book), mainViewModel: MainViewModel())
         .onAppear {
             print(book)
         }

@@ -47,6 +47,7 @@ class BookViewModel: ObservableObject {
     }
 
     func clickButton() {
+        print(goalState)
         switch goalState {
         case .complete:
             isPresentMakeView = true
