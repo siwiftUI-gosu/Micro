@@ -13,7 +13,7 @@ struct MyBooksView: View {
     @State var selectedItems: Set<Book> = []
     @State var showAlert = false
     @State var showToast = false
-    let items = CoreDataRepository.shared.fetchBookList()
+    @State private var items: [Book] = []
     @State var selectedItem: Book?
     
     var body: some View {
@@ -72,6 +72,7 @@ struct MyBooksView: View {
                                 selectedItems.removeAll()
                                 isEditMode = false
                                 showToastMessage()
+                                refreshItems()
                             }
                             Button("취소", role: .cancel) {}
                         } message: {
@@ -133,7 +134,15 @@ struct MyBooksView: View {
                 .opacity(showToast ? 1 : 0)
                 .animation(.easeInOut(duration: 0.3), value: showToast)
             )
+            .onAppear {
+                refreshItems()
+            }
         }
+    }
+    
+    private func refreshItems() {
+        print("Refreshing items")
+        items = CoreDataRepository.shared.fetchBookList()
     }
     
     private func showToastMessage() {

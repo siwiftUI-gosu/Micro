@@ -114,7 +114,7 @@ struct BookDetailView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationDestination(isPresented: $viewModel.isPresentMakeView) {
-            MakeBookView(viewModel: MakeBookViewModel())
+            MakeBookView(viewModel: MakeBookViewModel(book: viewModel.book))
                 .onDisappear {
                     viewModel.isPresentMakeView = false
                 }

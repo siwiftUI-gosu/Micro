@@ -57,14 +57,15 @@ struct MakeBookView: View {
                 backgroundColor: viewModel.bookTitleState.btnBackgroundColor,
                 borderColor: .clear,
                 isEnabled: viewModel.bookTitleState.isBtnEnabled
-            ) {}
-                .padding(.horizontal, 10)
+            ) {
+                viewModel.isPresentCompleteView = true
+            }
+            .padding(.horizontal, 10)
         }
         .padding(.horizontal, 16)
         .customNavigationBar(title: "")
+        .fullScreenCover(isPresented: $viewModel.isPresentCompleteView, content: {
+            AddBookCompleteView()
+        })
     }
-}
-
-#Preview {
-    MakeBookView(viewModel: MakeBookViewModel())
 }
