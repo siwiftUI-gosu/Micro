@@ -11,6 +11,11 @@ class MakeBookViewModel: ObservableObject {
     @Published var bookTitle = ""
     @Published var bookTitleState = MakeBookState.beforeEdit
     @Published var isPresentCompleteView = false
+    let book: Book
+    
+    init(book : Book) {
+        self.book = book
+    }
     
     func setState() {
         if bookTitle.isEmpty {
