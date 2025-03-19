@@ -106,7 +106,9 @@ struct MyBooksView: View {
                                         if isSelected {
                                             selectedItems.remove(item)
                                         } else {
-                                            selectedItems.insert(item)
+                                            if !item.isWrite {
+                                                selectedItems.insert(item)
+                                            }
                                         }
                                     } else {
                                         selectedItem = item

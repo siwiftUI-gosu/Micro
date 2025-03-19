@@ -12,7 +12,7 @@ struct CoreDataTestView: View {
     var body: some View {
         VStack(spacing: 30) {
             Button {
-                CoreDataRepository.shared.createNewBook(title: "", isWrite: true, createDate: Date(), goalList: [], iD: .init())
+                CoreDataRepository.shared.createNewBook(title: "작성중", isWrite: true, createDate: Date(), goalList: [], iD: .init(), isGuide: false)
             } label: {
                 Text("createNewBook")
             }
