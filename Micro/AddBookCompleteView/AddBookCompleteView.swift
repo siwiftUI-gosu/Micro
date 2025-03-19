@@ -2,10 +2,10 @@ import SwiftUI
 
 struct AddBookCompleteView: View {
     
-    var successCount: Int = 0
-    var failCount: Int = 0
-    var bookTitle: String = "TempTemp"
-    
+    var successCount: Int
+    var failCount: Int
+    var bookTitle: String
+    @Environment(\.dismiss) var dismiss
     @State private var isAppeared = false
     
     var body: some View {
@@ -46,6 +46,7 @@ struct AddBookCompleteView: View {
             
             Button(action: {
                 // 홈 화면으로 돌아가기 코드
+                dismiss()
             }) {
                 Text("홈 화면으로 돌아가기")
                     .font(.system(size: 14, weight: .regular))
@@ -60,7 +61,7 @@ struct AddBookCompleteView: View {
             .animation(.easeOut(duration: 0.5).delay(3), value: isAppeared)
             
             Button(action: {
-                // 책보러가기 코드
+                dismiss()
             }) {
                 Text("책 보러가기")
                     .font(.system(size: 16, weight: .bold))
@@ -100,6 +101,6 @@ struct AddBookCompleteViewLabel: View {
     }
 }
 
-#Preview {
-    AddBookCompleteView()
-}
+//#Preview {
+//    AddBookCompleteView(successCount: 10, failCount: 10, bookTitle: "temptemp", makeViewDismiss: .)
+//}

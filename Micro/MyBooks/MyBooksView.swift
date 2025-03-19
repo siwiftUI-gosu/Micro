@@ -1,10 +1,3 @@
-//
-//  MyBooksView.swift
-//  Micro
-//
-//  Created by SeoJunYoung on 3/4/25.
-//
-
 import SwiftUI
 
 struct MyBooksView: View {
@@ -15,11 +8,12 @@ struct MyBooksView: View {
     @State var showToast = false
     @State private var items: [Book] = []
     @State var selectedItem: Book?
+    @Binding var mainTabViewSelectedIndex: Int
     
     var body: some View {
         GeometryReader { geometry in
             let spacing: CGFloat = 20
-            let columnWidth = (geometry.size.width - (spacing * 2)) / 3 // 3개의 셀 + 2개의 간격
+            let columnWidth = (geometry.size.width - (spacing * 2)) / 3
             
             let columns = [
                 GridItem(.fixed(columnWidth), spacing: spacing),
@@ -89,31 +83,53 @@ struct MyBooksView: View {
                                 let completePercent = goals.count == 0 ? 1 : Double(goals.filter { $0.isComplete == true }.count) / Double(goals.count)
                                 let isSelected = selectedItems.contains(item)
                                 
-                                NavigationLink(destination: {
-                                    BookDetailView(viewModel: BookViewModel(book: item), mainViewModel: MainViewModel(writingBook: item))
-                                }, label: {
-                                    BookView(
-                                        isEditMode: $isEditMode,
-                                        title: item.title,
-                                        isWrite: item.isWrite,
-                                        completePercent: completePercent,
-                                        isSelected: .constant(isSelected)
-                                    )
-                                    .frame(width: columnWidth)
-                                    .aspectRatio(1 / 1.45, contentMode: .fit)
-                                })
-                                .onTapGesture {
-                                    if isEditMode {
-                                        if isSelected {
-                                            selectedItems.remove(item)
-                                        } else {
-                                            if !item.isWrite {
-                                                selectedItems.insert(item)
+                                // NavigationLink을 래핑하는 ZStack 추가
+                                ZStack {
+                                    if !isEditMode { // 편집 모드가 아닐 때만 NavigationLink 활성화
+                                        NavigationLink(destination: {
+                                            if item.isGuide {
+                                                ReadMeView()
+                                            } else {
+                                                BookDetailView(
+                                                    viewModel: BookViewModel(book: item),
+                                                    mainViewModel: MainViewModel(writingBook: item),
+                                                    mainTabViewSelectedIndex: $mainTabViewSelectedIndex
+                                                )
+                                            }
+                                        }, label: {
+                                            BookView(
+                                                isEditMode: $isEditMode,
+                                                title: item.title,
+                                                isWrite: item.isWrite,
+                                                completePercent: completePercent,
+                                                isSelected: .constant(isSelected)
+                                            )
+                                            .frame(width: columnWidth)
+                                            .aspectRatio(1 / 1.45, contentMode: .fit)
+                                        })
+                                        .buttonStyle(PlainButtonStyle()) // 기본 링크 스타일 제거
+                                    } else {
+                                        BookView(
+                                            isEditMode: $isEditMode,
+                                            title: item.title,
+                                            isWrite: item.isWrite,
+                                            completePercent: completePercent,
+                                            isSelected: .constant(isSelected)
+                                        )
+                                        .frame(width: columnWidth)
+                                        .aspectRatio(1 / 1.45, contentMode: .fit)
+                                        .onTapGesture {
+                                            if isEditMode {
+                                                if isSelected {
+                                                    selectedItems.remove(item)
+                                                } else {
+                                                    if !item.isWrite {
+                                                        selectedItems.insert(item)
+                                                    }
+                                                }
                                             }
                                         }
-                                    } else {
-                                        selectedItem = item
-                                    }
+                                    }    
                                 }
                             }
                         }
@@ -129,15 +145,17 @@ struct MyBooksView: View {
                     }
                     Spacer()
                 }
-                .frame(maxWidth: .infinity, alignment: .top) // 화면 맨 위 정렬
-                .offset(y: showToast ? 0 : -24) // 위에서 시작하도록 설정
-                .opacity(showToast ? 1 : 0)
-                .animation(.easeInOut(duration: 0.3), value: showToast)
+                    .frame(maxWidth: .infinity, alignment: .top)
+                    .offset(y: showToast ? 0 : -24)
+                    .opacity(showToast ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.3), value: showToast)
             )
             .onAppear {
                 refreshItems()
             }
         }
+        
+        
     }
     
     private func refreshItems() {
@@ -147,8 +165,6 @@ struct MyBooksView: View {
     
     private func showToastMessage() {
         showToast = true
-        
-        // 2초 후에 자동으로 사라지도록 설정
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             withAnimation {
                 showToast = false
@@ -158,5 +174,5 @@ struct MyBooksView: View {
 }
 
 #Preview {
-    MyBooksView()
+    MyBooksView(mainTabViewSelectedIndex: .constant(0))
 }

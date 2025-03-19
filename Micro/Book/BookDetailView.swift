@@ -8,14 +8,10 @@
 import SwiftUI
 
 struct BookDetailView: View {
-    @ObservedObject private var viewModel: BookViewModel
-    @ObservedObject private var mainViewModel: MainViewModel
+    @ObservedObject var viewModel: BookViewModel
+    @ObservedObject var mainViewModel: MainViewModel
     @Environment(\.dismiss) var dismiss
-    
-    init(viewModel: BookViewModel, mainViewModel: MainViewModel) {
-        self.viewModel = viewModel
-        self.mainViewModel = mainViewModel
-    }
+    @Binding var mainTabViewSelectedIndex: Int
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -31,17 +27,17 @@ struct BookDetailView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 40)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                        
+                    
                     Rectangle()
                         .foregroundColor(.clear)
                         .frame(maxWidth: .infinity, minHeight: 6, maxHeight: 6)
                         .background(Color.primitive.lightGray)
-                        
+                    
                     VStack(alignment: .leading, spacing: 16) {
                         Text("도전했던 하나의 목표")
                             .font(Font.system(size: 16).weight(.bold))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            
+                        
                         HStack {
                             BookTabButton(title: "전체(\(viewModel.totalGoalList.count))", isSelected: viewModel.selectedIndex == 0) {
                                 viewModel.setIndex(index: 0)
@@ -53,7 +49,7 @@ struct BookDetailView: View {
                                 viewModel.setIndex(index: 2)
                             }
                         }
-                            
+                        
                         switch viewModel.selectedIndex {
                         case 0:
                             if viewModel.totalGoalList.count == 0 {
@@ -68,14 +64,14 @@ struct BookDetailView: View {
                             } else {
                                 goalListView(goals: viewModel.totalGoalList)
                             }
-
+                            
                         case 1:
                             if viewModel.completeGoalList.count == 0 {
                                 emptyMessageView(title: "아직 기록이 없어요 🥺")
                             } else {
                                 goalListView(goals: viewModel.completeGoalList)
                             }
-                                
+                            
                         case 2:
                             if viewModel.notCompleteGoalList.count == 0 {
                                 emptyMessageView(title: "아직 기록이 없어요 🥺")
@@ -94,7 +90,7 @@ struct BookDetailView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-
+            
             CustomButton(
                 title: viewModel.goalState.title,
                 foregroundColor: viewModel.goalState.foregroundColor,
@@ -104,9 +100,8 @@ struct BookDetailView: View {
             ) {
                 viewModel.clickButton()
                 if viewModel.goalState == .empty {
-                    // 준영아 여기서 탭바 바꿔줘야해
-//                    mainViewModel.setIndex(index: 0)
-//                    dismiss()
+                    mainTabViewSelectedIndex = 0
+                    dismiss()
                 }
             }
             .padding(.horizontal, 16)
@@ -149,8 +144,5 @@ private extension BookDetailView {
 
 #Preview {
     let book = CoreDataRepository.shared.fetchBookList().first ?? Book(context: CoreDataRepository.shared.context)
-    BookDetailView(viewModel: BookViewModel(book: book), mainViewModel: MainViewModel())
-        .onAppear {
-            print(book)
-        }
+    BookDetailView(viewModel: BookViewModel(book: book), mainViewModel: MainViewModel(), mainTabViewSelectedIndex: .constant(0))
 }

@@ -38,12 +38,12 @@ struct MainView: View {
                     .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48, alignment: .leading)
                     
                     TabView(selection: $viewModel.selectedIndex) {
-                        MainEditView(viewModel: viewModel)
+                        MainEditView(viewModel: viewModel, mainTabViewSelectedIndex: $viewModel.selectedIndex)
                             .padding(.vertical, 6)
                             .frame(maxWidth: .infinity, alignment: .topLeading)
                             .tag(0)
                         
-                        MyBooksView()
+                        MyBooksView(mainTabViewSelectedIndex: $viewModel.selectedIndex)
                             .tag(1)
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))

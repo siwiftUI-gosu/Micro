@@ -51,6 +51,7 @@ struct ReadMeView: View {
             .padding()
 
         }
+        .navigationBarHidden(true)
     }
 }
 
