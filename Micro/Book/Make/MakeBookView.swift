@@ -11,12 +11,10 @@ struct MakeBookView: View {
     @ObservedObject var viewModel: MakeBookViewModel
     
     var body: some View {
-        BackNavigationBar(title: "")
-        
-        Spacer()
-            .frame(height: 40)
-        
         VStack {
+            Spacer()
+                .frame(height: 40)
+                
             VStack(spacing: 0) {
                 Text("이 책의 제목은")
                     .font(Font.system(size: 32).weight(.bold))
@@ -38,25 +36,32 @@ struct MakeBookView: View {
                     .foregroundColor(.black)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            
+                
             Spacer()
- 
+                
             HStack(spacing: 8) {
                 Image("icon_warning")
                     .frame(width: 20, height: 20)
-                        
+                    
                 Text("책의 제목은 만들면 수정할 수 없어요")
                     .font(Font.system(size: 14))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
-            .background(Color(red: 244/250, green: 244/250, blue: 244/250))
+            .background(Color(red: 244/255, green: 244/255, blue: 244/255))
             .cornerRadius(10)
+                
+            CustomButton(
+                title: viewModel.bookTitleState.btnTitle,
+                foregroundColor: viewModel.bookTitleState.btnForegroundColor,
+                backgroundColor: viewModel.bookTitleState.btnBackgroundColor,
+                borderColor: .clear,
+                isEnabled: viewModel.bookTitleState.isBtnEnabled
+            ) {}
+                .padding(.horizontal, 10)
         }
         .padding(.horizontal, 16)
-        
-        CustomButton(title: viewModel.bookTitleState.btnTitle, foregroundColor: viewModel.bookTitleState.btnForegroundColor, backgroundColor: viewModel.bookTitleState.btnBackgroundColor, borderColor: .clear, isEnabled: viewModel.bookTitleState.isBtnEnabled) {}
-            .padding(.horizontal, 10)
+        .customNavigationBar(title: "")
     }
 }
 

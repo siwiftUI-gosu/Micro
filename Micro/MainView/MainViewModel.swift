@@ -19,6 +19,8 @@ class MainViewModel: ObservableObject {
     @Published var isShowAchievedView: Bool = false
     @Published var selectedIndex: Int = 0
     @Published var textColor: Color = .primitive.green
+    
+    @Published var isPresentDetailView = false
 
     @Published var state: MainViewState = .beforeEdit
     @Published var isTextFieldHidden = false
@@ -33,7 +35,7 @@ class MainViewModel: ObservableObject {
     @Published var buttonY: CGFloat = 0
     
     init(writingBook: Book? = nil) {
-        self.writingBook = CoreDataRepository.shared.fetchWritingBook() ?? CoreDataRepository.shared.createNewBook(title: nil, createDate: Date(), goalList: [], iD: UUID())
+        self.writingBook = CoreDataRepository.shared.fetchWritingBook() ?? CoreDataRepository.shared.createNewBook(title: "작성중", createDate: Date(), goalList: [], iD: UUID())
         fetchFirstAccessStatus()
     }
     
@@ -72,11 +74,6 @@ class MainViewModel: ObservableObject {
             break
 
         case .achieveGoal:
-            DispatchQueue.main.async { [weak self] in
-                withAnimation {
-                    self?.isShowAchievedView = true
-                }
-            }
             isTextFieldHidden = true
             firstLabelText = "하나의 목표와 함께"
             secondLabelText = "내일 다시 뵈어요 ✨"
@@ -101,10 +98,16 @@ class MainViewModel: ObservableObject {
             guard let goal = todayGoal else { return }
             CoreDataRepository.shared.updateGoal(createDate: goal.createDate, iD: goal.iD, isComplete: false, todayGoal: goalText, book: goal.book)
         case .completEdit:
+            DispatchQueue.main.async { [weak self] in
+                withAnimation {
+                    self?.isShowAchievedView = true
+                }
+            }
             setState(state: .achieveGoal)
             guard let goal = todayGoal else { return }
             CoreDataRepository.shared.updateGoal(createDate: goal.createDate, iD: goal.iD, isComplete: true, todayGoal: goalText, book: goal.book)
         case .achieveGoal:
+            isPresentDetailView = true
             break
         }
     }

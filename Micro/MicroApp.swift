@@ -12,9 +12,17 @@ struct MicroApp: App {
     let persistenceController = PersistenceController.shared
 
     init() {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.shadowColor = .clear
+
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance
+
         setUpReadMeBook()
     }
-    
+
     var body: some Scene {
         WindowGroup {
             MainView()

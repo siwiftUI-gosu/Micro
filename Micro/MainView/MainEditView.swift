@@ -69,5 +69,11 @@ struct MainEditView: View {
                 }
             )
         }
+        .navigationDestination(isPresented: $viewModel.isPresentDetailView) {
+            BookDetailView(viewModel: BookViewModel(book: viewModel.writingBook), mainViewModel: viewModel)
+                .onDisappear {
+                    viewModel.isPresentDetailView = false
+                }
+        }
     }
 }
